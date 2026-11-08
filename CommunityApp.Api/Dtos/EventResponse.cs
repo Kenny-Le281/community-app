@@ -6,6 +6,7 @@ namespace CommunityApp.Api.Dtos;
 public record EventResponse(
     Guid Id,
     string Title,
+    string? Category,
     string? Description,
     DateTime? StartsAt,
     DateTime? EndsAt,

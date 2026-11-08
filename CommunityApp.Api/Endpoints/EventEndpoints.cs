@@ -15,10 +15,17 @@ public static class EventEndpoints
         group.MapPost("/", CreateEvent);
     }
 
-    private static async Task<IResult> GetEvents(AppDbContext db)
+    private static async Task<IResult> GetEvents(AppDbContext db, string? category)
     {
-        var events = await db.Events
-            .AsNoTracking()
+        var query = db.Events.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            var normalized = category.Trim().ToLowerInvariant();
+            query = query.Where(e => e.Category == normalized);
+        }
+
+        var events = await query
             .OrderBy(e => e.StartsAt)
             .ToListAsync();
 
@@ -49,6 +56,9 @@ public static class EventEndpoints
         var newEvent = new Event
         {
             Title = request.Title!.Trim(),
+            Category = string.IsNullOrWhiteSpace(request.Category)
+                ? null
+                : request.Category.Trim().ToLowerInvariant(),
             Description = request.Description,
             StartsAt = request.StartsAt?.UtcDateTime,
             EndsAt = request.EndsAt?.UtcDateTime,
@@ -69,6 +79,6 @@ public static class EventEndpoints
 
     // Maps a database entity to the shape we return to clients.
     private static EventResponse ToResponse(Event e) => new(
-        e.Id, e.Title, e.Description, e.StartsAt, e.EndsAt, e.Timezone,
+        e.Id, e.Title, e.Category, e.Description, e.StartsAt, e.EndsAt, e.Timezone,
         e.LocationName, e.Address, e.Latitude, e.Longitude, e.CreatedAt);
 }
