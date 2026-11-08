@@ -4,6 +4,7 @@ namespace CommunityApp.Api.Dtos;
 // Id and CreatedAt are filled in by the database, so they are not here.
 public record CreateEventRequest(
     string? Title,
+    string? Category,
     string? Description,
     DateTimeOffset? StartsAt,
     DateTimeOffset? EndsAt,

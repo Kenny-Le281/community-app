@@ -16,6 +16,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
             e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
             e.Property(x => x.Title).HasColumnName("title").IsRequired();
+            e.Property(x => x.Category).HasColumnName("category");
             e.Property(x => x.Description).HasColumnName("description");
             e.Property(x => x.StartsAt).HasColumnName("starts_at");
             e.Property(x => x.EndsAt).HasColumnName("ends_at");
@@ -25,6 +26,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(x => x.Latitude).HasColumnName("latitude");
             e.Property(x => x.Longitude).HasColumnName("longitude");
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+            e.HasIndex(x => x.Category);
         });
     }
 }
