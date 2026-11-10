@@ -1,0 +1,26 @@
+:root {
+  color-scheme: light;
+  --canvas: #fafaf8;
+  --surface: #fff;
+  --ink: #30373c;
+  --muted: #5c666e;
+  --line: #e6e5e1;
+  --accent: #47637e;
+  --tint: #eef2f5;
+  --wash: #f5f5f2;
+  --gutter: clamp(1rem, 4vw, 2rem);
+  --width: 70rem;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--canvas);
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}

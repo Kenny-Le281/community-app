@@ -1,0 +1,113 @@
+<main>
+  <section aria-labelledby="local-events-heading">
+    <h1 id="local-events-heading" class="browse-heading">Browse all events</h1>
+    @let view = state();
+    @if (view.status === 'loading') {
+      <p class="notice" role="status">Loading events…</p>
+    } @else if (view.status === 'error') {
+      <p class="notice" role="alert">Couldn’t load events. Please try again.</p>
+      <button type="button" (click)="loadEvents()">Try again</button>
+    } @else {
+      <div class="filters">
+        <div class="date-filters" role="group" aria-label="Event date">
+          @for (option of dateOptions; track option.value) {
+            <button
+              type="button"
+              [attr.aria-pressed]="dateFilter() === option.value"
+              (click)="selectDate(option.value)"
+            >
+              {{ option.label }}
+            </button>
+          }
+        </div>
+        <label class="category-filter">
+          Category
+          <select #category [value]="categoryFilter()" (change)="selectCategory(category.value)">
+            <option value="">All categories</option>
+            @for (value of categories(); track value) {
+              <option [value]="value">{{ value | titlecase }}</option>
+            }
+          </select>
+        </label>
+      </div>
+      @if (matchingEvents().length > 0) {
+        <div class="result-heading">
+          <p class="results" role="status">
+            @if (visibleEvents().length < matchingEvents().length) {
+              {{ visibleEvents().length }} of {{ matchingEvents().length }} events
+            } @else {
+              {{ matchingEvents().length }} {{ matchingEvents().length === 1 ? 'event' : 'events' }}
+            }
+          </p>
+        </div>
+      }
+      <ul class="events" role="list" aria-label="Local events">
+        @for (event of visibleEvents(); track event.id) {
+          <li>
+            <article>
+              @if (event.startsAt) {
+                <span class="date-tile" aria-hidden="true">
+                  <span>{{ event.startsAt | date: 'MMM' }}</span>
+                  <strong>{{ event.startsAt | date: 'd' }}</strong>
+                </span>
+              }
+              <div class="card-body">
+                @if (event.category) {
+                  <p class="eyebrow">{{ event.category | titlecase }}</p>
+                }
+                <h3>{{ event.title }}</h3>
+                @if (event.startsAt) {
+                  <time class="event-time" [attr.datetime]="event.startsAt">{{
+                    event.startsAt | date: 'EEE, MMM d · h:mm a'
+                  }}</time>
+                }
+                @if (event.locationName || event.address) {
+                  <p class="venue">{{ event.locationName || event.address }}</p>
+                }
+                @if (event.description) {
+                  <p class="description">{{ event.description }}</p>
+                }
+              </div>
+            </article>
+          </li>
+        } @empty {
+          <li class="empty" role="status">
+            @if (view.events.length === 0) {
+              No events have been added yet.
+            } @else {
+              No events match these filters. Try another date or category.
+            }
+          </li>
+        }
+      </ul>
+      @if (visibleEvents().length < matchingEvents().length) {
+        <div class="more"><button type="button" (click)="showMore()">Show more</button></div>
+      }
+    }
+  </section>
+
+  @for (section of discoverySections; track section.key) {
+    <section class="discovery" [attr.aria-labelledby]="section.key + '-heading'">
+      <header class="discovery-heading">
+        <h2 [id]="section.key + '-heading'">{{ section.title }}</h2>
+        @if (showDiscoveryExamples) {
+          <span class="sample-label">Sample events</span>
+        }
+      </header>
+      @if (showDiscoveryExamples) {
+        <p class="section-note">{{ section.description }}</p>
+        <ul class="picks" role="list">
+          @for (example of section.examples; track example.title) {
+            <li>
+              <p class="eyebrow">{{ example.category }}</p>
+              <h3>{{ example.title }}</h3>
+              <p class="pick-meta">{{ example.when }} · {{ example.venue }}</p>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="section-note">{{ section.empty }}</p>
+      }
+    </section>
+  }
+</main>
