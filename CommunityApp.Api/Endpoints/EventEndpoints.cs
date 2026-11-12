@@ -12,6 +12,7 @@ public static class EventEndpoints
         var group = app.MapGroup("/api/events");
 
         group.MapGet("/", GetEvents);
+        group.MapGet("/{id:guid}", GetEventById);
         group.MapPost("/", CreateEvent);
     }
 
@@ -30,6 +31,17 @@ public static class EventEndpoints
             .ToListAsync();
 
         return Results.Ok(events.Select(ToResponse));
+    }
+
+    private static async Task<IResult> GetEventById(Guid id, AppDbContext db)
+    {
+        var found = await db.Events
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        return found is null
+            ? Results.NotFound()
+            : Results.Ok(ToResponse(found));
     }
 
     private static async Task<IResult> CreateEvent(CreateEventRequest request, AppDbContext db)
